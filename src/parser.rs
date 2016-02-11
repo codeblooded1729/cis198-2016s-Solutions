@@ -25,6 +25,7 @@ fn evaluate_line(stack: &mut Stack, buf: &String) -> polish::Result<()> {
     // TODO: Evaluate all of the tokens on the line.
     unimplemented!()
 }
+
 #[cfg(test)]
 mod tests {
     use polish::{Stack, Error, Elt};
@@ -130,4 +131,3 @@ mod tests {
         } else { assert!(false); }
     }
 }
-
