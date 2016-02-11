@@ -1,24 +1,24 @@
 use std::io::{self, Write};
 
-use polish::{self, Stack};
+use rpn::{self, Stack};
 
 /// Start a read-eval-print loop, which runs until an error or `quit`.
-pub fn read_eval_print_loop() -> polish::Result<()> {
+pub fn read_eval_print_loop() -> rpn::Result<()> {
     // Create a stack to work on.
     let mut stack = Stack::new();
 
     loop {
         // Print a user input prompt.
         print!("> ");
-        try!(io::stdout().flush().map_err(polish::Error::IO));
+        try!(io::stdout().flush().map_err(rpn::Error::IO));
 
         // TODO: Read from stdin into a String, and evaluate_line the result.
-        // * An io::Error should be converted into a polish::Error::IO
+        // * An io::Error should be converted into a rpn::Error::IO
         unimplemented!();
     }
 }
 
-fn evaluate_line(stack: &mut Stack, buf: &String) -> polish::Result<()> {
+fn evaluate_line(stack: &mut Stack, buf: &String) -> rpn::Result<()> {
     // Create an iterator over the tokens.
     let tokens = buf.trim().split_whitespace();
 
@@ -28,7 +28,7 @@ fn evaluate_line(stack: &mut Stack, buf: &String) -> polish::Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use polish::{Stack, Error, Elt};
+    use rpn::{Stack, Error, Elt};
     use parser::evaluate_line;
 
     #[test]

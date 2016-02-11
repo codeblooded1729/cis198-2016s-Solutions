@@ -1,5 +1,5 @@
 pub mod parser;
-pub mod polish;
+pub mod rpn;
 
 use parser::read_eval_print_loop;
 
