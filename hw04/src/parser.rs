@@ -17,7 +17,11 @@ pub fn read_eval_print_loop() -> rpn::Result<()> {
         let mut buf = String::new();
         io::stdin().lock().read_line(&mut buf).map_err(|e| rpn::Error::IO(e))?;
 
-        evaluate_line(&mut stack, &buf)?;
+        match evaluate_line(&mut stack, &buf){
+            Err(rpn::Error::Syntax) => println!("Syntax Error"),
+            Err(rpn::Error::Type) => println!("Type error"),
+            _ => println!("{:?}", stack.pop().unwrap()),
+        }
     }
 }
 
