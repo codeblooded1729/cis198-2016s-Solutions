@@ -1,5 +1,7 @@
 use std::result;
 use std::io;
+use rand;
+use rand::Rng;
 
 #[derive(Eq, PartialEq, Ord, PartialOrd, Debug)]
 /// An element of the stack. May be either integer or boolean.
@@ -42,27 +44,93 @@ pub enum Op {
 
 // TODO: Stack.
 
+pub struct Stack{
+    container: Vec<Elt>,
+}
+
 // TODO: Result.
+
+pub type Result<T> = result::Result<T, Error>;
 
 impl Stack {
     /// Creates a new Stack
     pub fn new() -> Stack {
-        unimplemented!()
+        Stack { container: vec![]}
     }
 
     /// Pushes a value onto the stack.
     pub fn push(&mut self, val: Elt) -> Result<()> {
-        unimplemented!()
+        self.container.push(val);
+        Ok(())
     }
 
     /// Tries to pop a value off of the stack.
     pub fn pop(&mut self) -> Result<Elt> {
-        unimplemented!()
+        if self.container.len() == 0 {
+            return Err(Error::Underflow);
+        }
+
+        let elem = self.container.pop().unwrap();
+        Ok(elem)
     }
 
     /// Tries to evaluate an operator using values on the stack.
     pub fn eval(&mut self, op: Op) -> Result<()> {
-        unimplemented!()
+        match op {
+            Op::Add => {
+                let a = self.pop()?;
+                let b = self.pop()?;
+                let (int_a, int_b) = match (a, b) {
+                    (Elt::Int(int_1), Elt::Int(int_2))=> (int_1, int_2),
+                    _ => {return Err(Error::Type);},
+                };
+                self.push(Elt::Int(int_a + int_b))?;
+                Ok(())
+            }
+
+            Op::Eq => {
+                let a = self.pop()?;
+                let b = self.pop()?;
+                
+                match(a, b){
+                    (Elt::Int(int_a), Elt::Int(int_b)) => self.push(Elt::Bool(int_a == int_b)),
+                    (Elt::Bool(bool_a), Elt::Bool(bool_b)) => self.push(Elt::Bool(bool_a == bool_b)),
+                    _ => Err(Error::Type)
+                }
+            }
+
+            Op::Neg => {
+                let a = self.pop()?;
+                match a {
+                    Elt::Int(i) => self.push(Elt::Int(-i))?,
+                    Elt::Bool(b) => self.push(Elt::Bool(!b))?,
+                } 
+                Ok(())
+            }
+
+            Op::Swap => {
+                let a = self.pop()?;
+                let b = self.pop()?;
+                self.push(a)?;
+                self.push(b)?;
+                Ok(())
+            }
+
+            Op::Rand => {
+                let mut rng = rand::thread_rng();
+                let x = self.pop()?;
+                match x {
+                    Elt::Int(i) => self.push(Elt::Int(rng.gen_range(0..i))),
+                    _ => Err(Error::Type)
+                }
+            }
+
+            Op::Quit => {
+                Err(Error::Quit)
+            }
+
+
+        }
     }
 }
 

@@ -1,6 +1,6 @@
-use std::io::{self, Write};
+use std::io::{self, Write, BufRead};
 
-use rpn::{self, Stack};
+use rpn::{self, Stack, Elt, Op};
 
 /// Start a read-eval-print loop, which runs until an error or `quit`.
 pub fn read_eval_print_loop() -> rpn::Result<()> {
@@ -14,16 +14,60 @@ pub fn read_eval_print_loop() -> rpn::Result<()> {
 
         // TODO: Read from stdin into a String, and evaluate_line the result.
         // * An io::Error should be converted into a rpn::Error::IO
-        unimplemented!();
+        let mut buf = String::new();
+        io::stdin().lock().read_line(&mut buf).map_err(|e| rpn::Error::IO(e))?;
+
+        evaluate_line(&mut stack, &buf)?;
     }
 }
 
 fn evaluate_line(stack: &mut Stack, buf: &String) -> rpn::Result<()> {
     // Create an iterator over the tokens.
     let tokens = buf.trim().split_whitespace();
+    for token in tokens{
+        if token.parse::<i32>().is_ok() {
+            let i = token.parse::<i32>().unwrap();
+            stack.push(Elt::Int(i))?;
+        }
 
-    // TODO: Evaluate all of the tokens on the line.
-    unimplemented!()
+        else if token == "true" {
+            stack.push(Elt::Bool(true))?;
+        }
+
+        else if token == "false" {
+            stack.push(Elt::Bool(false))?;
+        }
+
+        else if token == "+" {
+            stack.eval(Op::Add)?;
+        }
+
+        else if token == "~" {
+            stack.eval(Op::Neg)?;
+        }
+
+        else if token == "<->"{
+            stack.eval(Op::Swap)?;
+        }
+
+        else if token == "=" {
+            stack.eval(Op::Eq)?;
+        }
+
+        else if token == "#" {
+            stack.eval(Op::Rand)?;
+        }
+
+        else if token == "quit"{
+            stack.eval(Op::Quit)?;
+        }
+
+        else{
+            return Err(rpn::Error::Syntax)
+        }
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]
