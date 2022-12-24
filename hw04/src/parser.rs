@@ -20,6 +20,7 @@ pub fn read_eval_print_loop() -> rpn::Result<()> {
         match evaluate_line(&mut stack, &buf){
             Err(rpn::Error::Syntax) => println!("Syntax Error"),
             Err(rpn::Error::Type) => println!("Type error"),
+            Err(rpn::Error::Quit) => {return Err(rpn::Error::Quit);}
             _ => println!("{:?}", stack.pop().unwrap()),
         }
         
