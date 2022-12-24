@@ -10,7 +10,7 @@ pub fn read_eval_print_loop() -> rpn::Result<()> {
     loop {
         // Print a user input prompt.
         print!("> ");
-        try!(io::stdout().flush().map_err(rpn::Error::IO));
+        io::stdout().flush().map_err(rpn::Error::IO)?;
 
         // TODO: Read from stdin into a String, and evaluate_line the result.
         // * An io::Error should be converted into a rpn::Error::IO
