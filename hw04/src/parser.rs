@@ -22,6 +22,7 @@ pub fn read_eval_print_loop() -> rpn::Result<()> {
             Err(rpn::Error::Type) => println!("Type error"),
             _ => println!("{:?}", stack.pop().unwrap()),
         }
+        
     }
 }
 
